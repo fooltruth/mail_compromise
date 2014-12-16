@@ -1,5 +1,6 @@
 import platform
 import sys
+import subprocess
 
 def linux_distribution():
   try:
@@ -26,4 +27,9 @@ platform.uname(),
 platform.version(),
 ))
 
+p1 = subprocess.Popen(["netstat", "-ntpl"], stdout=subprocess.PIPE) 
+p2 = subprocess.Popen(["grep", "25"], stdin=p1.stdout)
+p3 = subprocess.Popen([],stdin=p2.stdout)
+output, err = p2.communicate()
+print output
 
