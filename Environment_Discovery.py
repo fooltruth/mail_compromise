@@ -12,6 +12,7 @@ class EnvironmentDiscovery:
 		output, err = p.communicate()
 		return output	
 
+	# Is it a plesk server?
 	def is_plesk(self):
 		plesk_process = "netstat -ntpl | grep 'sw-cp-server' | wc -l"
 		p = subprocess.Popen(plesk_process, stdout=subprocess.PIPE, shell=True)
@@ -21,6 +22,7 @@ class EnvironmentDiscovery:
 		else: 
 			return False
 	
+	# matches keyword again MTAs
 	def mta_f(self,x):
 		return {
 			'master': 'Postfix',
@@ -29,6 +31,8 @@ class EnvironmentDiscovery:
 			'exim': 'Exim',
 		}.get(x,'Unknown')
 
+
+	# Discover MTA using netstat output. 
 	def mta_type(self):
 		mta_process_id = "netstat -ntpl | grep 25 | awk -F/ '{print $2}' | uniq"
 		mta_processes = "netstat -ntpl | grep 25 | awk -F/ '{print $2}' | uniq | wc -l"
@@ -47,6 +51,6 @@ class EnvironmentDiscovery:
 		else:
 			print "There are multiple MTA's running and this script is not compatiable"
 
-	
+	# Find Linux Distribution and version	
 	def linux_dist(self):
 		return platform.dist()
