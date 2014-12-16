@@ -1,7 +1,13 @@
 #!/usr/bin/python
-import subprocess,sys,platform
+import subprocess,platform
 
+# This class discovers all required feature of environement
+# * OS distribution
+# * PLesk or Non Plesk
+# * MTA Type
+# * PHP version
 class EnvironmentDiscovery:
+	# Empty constructor 
 	def __init__(self):
 		pass   
 
@@ -53,4 +59,19 @@ class EnvironmentDiscovery:
 
 	# Find Linux Distribution and version	
 	def linux_dist(self):
-		return platform.dist()
+		return platform.linux_distribution()
+
+	# Determine mail log path based on environment
+        def mail_log_path(self,distro,plesk):
+		Redhat = set(['Redhat','CentOS'])
+        	Debian = set(['Ubuntu','Debian'])
+
+		if plesk:
+			return "/usr/local/psa/var/log/maillog"
+		elif distro in Redhat:
+			return "/var/log/maillog"
+		elif distro in Debian:
+			return "/var/log/mail.log"
+		else: 
+			return "Unknown"
+		
