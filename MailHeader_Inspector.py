@@ -88,16 +88,20 @@ def grepfunc(text,pattern):
 
 # Idetify if the mail was sent via PHP script or from Mail authentication
 def mailOrigin(mid,mta):
-	#mail = viewMail(mid,mta)
-	f = open('/var/spool/postfix/deferred/3/3A77414C1B3','r')
-	mail = f.read()
-	f.close()
+	mail = viewMail(mid,mta)
+	#f = open('/var/spool/postfix/deferred/3/3A77414C1B3','r')
+	#mail = f.read()
+	#f.close()
+	# Postfix: Examine the last "Recived: by" line. Bounced emails with have more than one "Received: by" lines.
+        # Last entry on the line indicates the userid. If userid is 110, mail is generated from Auth users. 
+        # This is only true for Plesk servers. 
 	if mta=="Postfix":
-		if grepfunc(mail,"Received")[-2:-1][0][:-1]==110:	
+		if grepfunc(mail,"Received: by")[-2:-1][0][:-1]==110:	
 			print "Auth User"
 		else:
 			print "PHP Script"
-
+	# Qmail: Examine the last "Recived:" line. Bounced emails with have more than one "Received:" lines.
+        # If the received line contains an entry "network", mail is generated from Auth users; Otherwise from PHP script 
 	elif mta=="Qmail":
 		qmail_list=grepfunc(mail,"Received: \(qmail")
 		for i in qmail_list:
