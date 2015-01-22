@@ -1,6 +1,8 @@
 #!/usr/bin/python
 
 import os, random,subprocess,re
+
+spam_keywords=['aDult','already approved', 'already wealthy', 'amazing new discovery', 'amazing pranks', 'an excite game', 'and you save','nasty','babe','fuck']
 # Find Mail queue size
 
 #print number of folders in directory
@@ -25,6 +27,20 @@ def fcount(path):
     		for name in files:
         		c=c+1
 	return c
+
+def intersection(iterableA, iterableB, key=lambda x: x):
+    """Return the intersection of two iterables with respect to `key` function.
+
+    """
+    def unify(iterable):
+        d = {}
+        for item in iterable:
+            d.setdefault(key(item), []).append(item)
+        return d
+
+    A, B = unify(iterableA), unify(iterableB)
+
+    return [(A[k], B[k]) for k in A if k in B]
 
 
 # Mail Queue size
@@ -87,33 +103,44 @@ def grepfunc(text,pattern):
 
 
 # Idetify if the mail was sent via PHP script or from Mail authentication
-def mailOrigin(mid,mta):
-	mail = viewMail(mid,mta)
-	#f = open('/var/spool/postfix/deferred/3/3A77414C1B3','r')
-	#mail = f.read()
-	#f.close()
+def mailOrigin(mail,mta):
 	# Postfix: Examine the last "Recived: by" line. Bounced emails with have more than one "Received: by" lines.
         # Last entry on the line indicates the userid. If userid is 110, mail is generated from Auth users. 
         # This is only true for Plesk servers. 
 	if mta=="Postfix":
 		if grepfunc(mail,"Received: by")[-2:-1][0][:-1]==110:	
-			print "Auth User"
+			return "Auth"
 		else:
-			print "PHP Script"
+			return "PHP"
 	# Qmail: Examine the last "Recived:" line. Bounced emails with have more than one "Received:" lines.
         # If the received line contains an entry "network", mail is generated from Auth users; Otherwise from PHP script 
 	elif mta=="Qmail":
 		qmail_list=grepfunc(mail,"Received: \(qmail")
 		for i in qmail_list:
 			if re.search("network",i):	
-				print "Auth User"
+				return "Auth"
 			else: 
-				print "PHP Script"
+				return "PHP"
 
 	
-mailOrigin("3B77413C1B3","Postfix")
+#mailOrigin("3B77413C1B3","Postfix")
 
 
+def isSpam(mid,mta):
+	#mail = viewMail(mid,mta)
+  	f = open('/var/spool/postfix/deferred/3/3A77414C1B3','r')
+        mail = f.read()
+        f.close()
+	
+	if mailOrigin(mail,mta)=="PHP":
+		if (len(intersection(spam_keywords, grepfunc(mail,"Subject:"), key=str.lower)) > 0): 
+			 return grepfunc(mail,"X-PHP-Originating-Script")[1].split(':')[1]
+		else:
+			return "Enable PHP add_x_header"
+	else:
+		return ""		
+
+isSpam("3A77414C1B3","Postfix")	
 #print folderCount
 # Find mail with lots of receipent
 
