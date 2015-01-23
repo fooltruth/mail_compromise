@@ -2,7 +2,7 @@
 
 import os, random,subprocess,re
 
-spam_keywords=['aDult','already approved', 'already wealthy', 'amazing new discovery', 'amazing pranks', 'an excite game', 'and you save','nasty','babe','fuck']
+spam_keywords=['Vigara','Viigara' ,'aDult','Debt','already approved', 'already wealthy', 'amazing new discovery', 'amazing pranks', 'an excite game', 'and you save','nasty','babe','fuck']
 # Find Mail queue size
 
 #print number of folders in directory
@@ -73,11 +73,14 @@ queue_size("/var/spool/postfix/","Postfix")
 
 # Get a specified number mail headers from specififed queue
 def getRandMailHeaders(queue,n):
+	f_list = []
 	for dirpath, dirnames, files in os.walk(queue):
-		if len(files)>=n:
-                	return random.sample(files,n)
-		else:
-			return files
+		for name in files:
+			f_list.append(name)
+	if len(f_list)>=n:
+               	return random.sample(f_list,n)
+	else:
+		return f_list
 
 # Read a mail
 def viewMail(mid,mta):
@@ -126,7 +129,7 @@ def mailOrigin(mail,mta):
 #mailOrigin("3B77413C1B3","Postfix")
 
 
-def isSpam(mid,mta):
+def isSpamMail(mid,mta):
 	#mail = viewMail(mid,mta)
   	f = open('/var/spool/postfix/deferred/3/3A77414C1B3','r')
         mail = f.read()
@@ -144,9 +147,48 @@ def isSpam(mid,mta):
 
 #print isSpam("3A77414C1B3","Postfix")	
 
+def isSpam(queue,mta):
+	def_spam = []
+	pos_spam = []
+	for i in getRandMailHeaders(queue,5):
+		if isSpamMail(i,mta)[0]=="spam":
+			def_spam.append(isSpamMail(i,mta)[1])
+		elif isSpamMail(i,mta)[0]=="possible":
+                	pos_spam.append(isSpamMail(i,mta)[1])
+	
+	if len(def_spam) > 2:
+		return "Spam", def_spam
+	elif len(pos_spam) > 2:
+		return "Possible", pos_spam
+	else:
+		return "Select another 5"
 
-for i in getRandMailHeaders("/var/spool/postfix",5):
-	print isSpam(i,"Postfix")
+def find_php_file(path,fname):
+	cmd = "find " +path+ " -name " +fname+ " -type f"
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
+        output, err = p.communicate()
+        return output
+
+def verifySpam(mta):
+	queue = "/var/spool/postfix/deferred"
+	path = "/var/www/"
+	n = 5
+	d_file = {}
+	if isSpam(queue,mta)[0]=="Spam":
+		f_list = set(isSpam(queue,mta)[1])
+		for i in f_list:
+			d_file = find_php_file(path,i)	
+	else isSpam(queue,mta)[0]=="possible":
+		f_list = set(isSpam(queue,mta)[1])
+                for i in f_list:
+                        d_file = find_php_file(path,i)  
+				
+verifySpam("Postfix")
+        #read_mail = "find /var/qmail/queue/mess/ -name" + mid
+        #p = subprocess.Popen(read_mail, stdout=subprocess.PIPE, shell=True)
+        #output, err = p.communicate()
+        #return output
+		
 #print folderCount
 # Find mail with lots of receipent
 
