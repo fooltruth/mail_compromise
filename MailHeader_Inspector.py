@@ -134,13 +134,19 @@ def isSpam(mid,mta):
 	
 	if mailOrigin(mail,mta)=="PHP":
 		if (len(intersection(spam_keywords, grepfunc(mail,"Subject:"), key=str.lower)) > 0): 
-			 return grepfunc(mail,"X-PHP-Originating-Script")[1].split(':')[1]
+			return "spam",grepfunc(mail,"X-PHP-Originating-Script")[1].split(':')[1]
+		elif (len(grepfunc(mail,"X-PHP-Originating-Script"))>0):
+			return "possible",grepfunc(mail,"X-PHP-Originating-Script")[1].split(':')[1]
 		else:
-			return "Enable PHP add_x_header"
+			return "enable","Enable PHP add_x_header"
 	else:
-		return ""		
+		return "auth","Auth"		
 
-isSpam("3A77414C1B3","Postfix")	
+#print isSpam("3A77414C1B3","Postfix")	
+
+
+for i in getRandMailHeaders("/var/spool/postfix",5):
+	print isSpam(i,"Postfix")
 #print folderCount
 # Find mail with lots of receipent
 
