@@ -169,6 +169,16 @@ def find_php_file(path,fname):
         output, err = p.communicate()
         return output
 
+
+## if 0 return then file is infected; 1 file is not infected; 2 - file is not there
+def isInfected(fname):
+        cmd = "egrep 'passthru|shell_exec|base64_decode|edoced_46esab' "  + fname
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, stderr=subprocess.STDOUT)
+        output, err = p.communicate()
+        #print p.returncode
+        return p.returncode
+
+
 def verifySpam(mta):
 	queue = "/var/spool/postfix/deferred"
 	path = "/var/www/"
@@ -177,17 +187,21 @@ def verifySpam(mta):
 	if isSpam(queue,mta)[0]=="Spam":
 		f_list = set(isSpam(queue,mta)[1])
 		for i in f_list:
-			d_file = find_php_file(path,i)	
-	else isSpam(queue,mta)[0]=="possible":
+			d_file[i] = find_php_file(path,i)	
+	elif isSpam(queue,mta)[0]=="possible":
 		f_list = set(isSpam(queue,mta)[1])
                 for i in f_list:
-                        d_file = find_php_file(path,i)  
-				
-verifySpam("Postfix")
-        #read_mail = "find /var/qmail/queue/mess/ -name" + mid
-        #p = subprocess.Popen(read_mail, stdout=subprocess.PIPE, shell=True)
-        #output, err = p.communicate()
-        #return output
+                        d_file[i] = find_php_file(path,i)  
+	for key in d_file:
+		if isInfected(d_file[key])==0:
+			print "Infected file is: " + d_file[key] 				
+		elif isInfected(d_file[key])==1:
+			print "Check time stamp"
+		else:
+			print "Nothing to be done"
+
+print verifySpam("Postfix")
+
 		
 #print folderCount
 # Find mail with lots of receipent
