@@ -258,7 +258,7 @@ def isSpam(queue,mta):
 	if len(def_spam) > 2:
 		return "Spam", def_spam
 	elif len(pos_spam) > 2:
-		return "Possible", pos_spam
+		return "possible", pos_spam
 	else:
 		return "Select another 5"
 
