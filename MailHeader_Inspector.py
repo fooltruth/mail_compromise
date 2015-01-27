@@ -185,30 +185,32 @@ def verifySpam(mta):
 	queue = "/var/spool/postfix/deferred"
 	path = "/var/www/"
 	n = 5
-	d_file = {}
+	d_file = []
 	if isSpam(queue,mta)[0]=="Spam":
 		f_list = set(isSpam(queue,mta)[1])
 		for i in f_list:
-			d_file[i] = find_php_file(path,i)	
+			for j in find_php_file(path,i).split('\n'):
+				d_file.append(j)
 	elif isSpam(queue,mta)[0]=="possible":
 		f_list = set(isSpam(queue,mta)[1])
                 for i in f_list:
-                        d_file[i] = find_php_file(path,i)  
+                        for j in find_php_file(path,i).split('\n'):
+				d_file.append(j)  
 	for key in d_file:
-		if isInfected(d_file[key])==0:
-			f_timestamp=datetime.datetime.fromtimestamp(os.path.getmtime(d_file[key][:-1]))
+		if isInfected(key)==0:
+			f_timestamp=datetime.datetime.fromtimestamp(os.path.getmtime(key))
 			if (datetime.datetime.now() - f_timestamp) < datetime.timedelta(days=2):
-				print "Infected file is: " + d_file[key]
+				print "Infected file is: " + key
 				return True
 			else:
-				print "Possible"
+				print "Infected file is: " +key
 				return False 				
-		elif isInfected(d_file[key])==1:
-			f_timestamp=datetime.datetime.fromtimestamp(os.path.getmtime(d_file[key][:-1]))	
+		elif isInfected(key)==1:
+			f_timestamp=datetime.datetime.fromtimestamp(os.path.getmtime(key))	
 			if (datetime.datetime.now() - f_timestamp) < datetime.timedelta(days=2):
-				print "File was modified with in 2 days, most likly spam sent from thisi : " + d_file[key]
+				print "File was modified with in 2 days, most likly spam sent from thisi : " + key
 			else:
-				print "Manually verify this file: " + d_file[key]
+				print "Manually verify this file: " + key
 			return False 				
 			
 		else:
@@ -219,8 +221,8 @@ def verifySpam(mta):
 #	if verifySpam("Postfix")==True:
 #		break
 
-isSpam("/var/spool/postfix/deferred","Postfix")
-		
+#isSpam("/var/spool/postfix/deferred","Postfix")
+verifySpam("Postfix")		
 #print folderCount
 # Find mail with lots of receipent
 
