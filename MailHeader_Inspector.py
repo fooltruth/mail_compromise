@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import os, random,subprocess,re
+import os,random,subprocess,re,time,datetime
 
 spam_keywords=['Vigara','Viigara' ,'aDult','Debt','already approved', 'already wealthy', 'amazing new discovery', 'amazing pranks', 'an excite game', 'and you save','nasty','babe','fuck']
 # Find Mail queue size
@@ -130,10 +130,11 @@ def mailOrigin(mail,mta):
 
 
 def isSpamMail(mid,mta):
-	#mail = viewMail(mid,mta)
-  	f = open('/var/spool/postfix/deferred/3/3A77414C1B3','r')
-        mail = f.read()
-        f.close()
+	mail = viewMail(mid,mta)
+	#print mail
+  	#f = open('/var/spool/postfix/deferred/3/3A77414C1B3','r')
+        #mail = f.read()
+        #f.close()
 	
 	if mailOrigin(mail,mta)=="PHP":
 		if (len(intersection(spam_keywords, grepfunc(mail,"Subject:"), key=str.lower)) > 0): 
@@ -155,6 +156,8 @@ def isSpam(queue,mta):
 			def_spam.append(isSpamMail(i,mta)[1])
 		elif isSpamMail(i,mta)[0]=="possible":
                 	pos_spam.append(isSpamMail(i,mta)[1])
+		else:
+			print "No SPAM!!!!!"
 	
 	if len(def_spam) > 2:
 		return "Spam", def_spam
@@ -175,7 +178,6 @@ def isInfected(fname):
         cmd = "egrep 'passthru|shell_exec|base64_decode|edoced_46esab' "  + fname
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, stderr=subprocess.STDOUT)
         output, err = p.communicate()
-        #print p.returncode
         return p.returncode
 
 
@@ -194,14 +196,30 @@ def verifySpam(mta):
                         d_file[i] = find_php_file(path,i)  
 	for key in d_file:
 		if isInfected(d_file[key])==0:
-			print "Infected file is: " + d_file[key] 				
+			f_timestamp=datetime.datetime.fromtimestamp(os.path.getmtime(d_file[key][:-1]))
+			if (datetime.datetime.now() - f_timestamp) < datetime.timedelta(days=2):
+				print "Infected file is: " + d_file[key]
+				return True
+			else:
+				print "Possible"
+				return False 				
 		elif isInfected(d_file[key])==1:
-			print "Check time stamp"
+			f_timestamp=datetime.datetime.fromtimestamp(os.path.getmtime(d_file[key][:-1]))	
+			if (datetime.datetime.now() - f_timestamp) < datetime.timedelta(days=2):
+				print "File was modified with in 2 days, most likly spam sent from thisi : " + d_file[key]
+			else:
+				print "Manually verify this file: " + d_file[key]
+			return False 				
+			
 		else:
 			print "Nothing to be done"
+			return False
 
-print verifySpam("Postfix")
+#for i in range(3):
+#	if verifySpam("Postfix")==True:
+#		break
 
+isSpam("/var/spool/postfix/deferred","Postfix")
 		
 #print folderCount
 # Find mail with lots of receipent
