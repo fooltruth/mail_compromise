@@ -198,7 +198,7 @@ def queue_size(queue_loc,mta):
 		print "Deffered Mail Queue :", mail_queue_num['deferred']
 		print "Active Mail Queue :", mail_queue_num['active']
 		print "Corrupt Mail Queue:", mail_queue_num['corrupt']
-
+		print "\n"
 	elif mta=="Qmail":
 		m_queue = ["remote", "local", "bounce"]
                 mail_queue_num = {}
@@ -208,6 +208,7 @@ def queue_size(queue_loc,mta):
                 print "Bounced Mail Queue :", mail_queue_num['bounce']
                 print "Deffered Mail Queue :", mail_queue_num['remote']
                 print "Active Mail Queue :", mail_queue_num['local']
+		print "\n"
 	else:
 		print "MTA running on this server is not supported by this script"
 
@@ -372,21 +373,29 @@ def verifySpam(mta):
 
 e = EnvironmentDiscovery()
 MTA=e.mta_type()
-#print "Mail Service is: ", MTA
-#print "Plesk server? ", e.is_plesk()
-#print e.mail_log_path(e.linux_dist()[0],e.is_plesk())
-MAILLOG_PATH=e.mail_log_path(e.linux_dist()[0],e.is_plesk())
-#print MAILLOG_PATH
-MAIL_QUEUE_LOC=e.mail_queue_loc(MTA)
-#print MAIL_QUEUE_LOC
+if (MTA=="Postfix") or (MTA=="Qmail"):
+	print "\n"
+	print "*************************"
+	print "Plesk server? ", e.is_plesk()
+	print "*************************"
+	print "\n"
+	print "*************************"
+	print "Mail Service is: ", MTA
+	print "*************************"
 
-#m=MailParser()
-#m.auth_email_list(MAILLOG_PATH,)
+	#print e.mail_log_path(e.linux_dist()[0],e.is_plesk())
+	MAILLOG_PATH=e.mail_log_path(e.linux_dist()[0],e.is_plesk())
+	#print MAILLOG_PATH
+	MAIL_QUEUE_LOC=e.mail_queue_loc(MTA)
+	#print MAIL_QUEUE_LOC
 
-queue_size(MAIL_QUEUE_LOC,MTA)
-for i in range(3):
-	if verifySpam(MTA)==True:
-		break
+	#m=MailParser()
+	#m.auth_email_list(MAILLOG_PATH,)
+
+	queue_size(MAIL_QUEUE_LOC,MTA)
+	for i in range(3):
+		if verifySpam(MTA)==True:
+			break
 
 #isSpam("/var/spool/postfix/deferred","Postfix")
 #verifySpam(MTA)		
