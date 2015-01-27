@@ -44,8 +44,8 @@ class EnvironmentDiscovery:
 
 	# Discover MTA using netstat output. 
 	def mta_type(self):
-		mta_process_id = "netstat -ntpl | grep 25 | awk -F/ '{print $2}' | uniq"
-		mta_processes = "netstat -ntpl | grep 25 | awk -F/ '{print $2}' | uniq | wc -l"
+		mta_process_id = "netstat -ntpl | grep :25 | awk -F/ '{print $2}' | uniq"
+		mta_processes = "netstat -ntpl | grep :25 | awk -F/ '{print $2}' | uniq | wc -l"
 		p1 = subprocess.Popen(mta_process_id, stdout=subprocess.PIPE, shell=True)
 		outputp1, err = p1.communicate()
 
