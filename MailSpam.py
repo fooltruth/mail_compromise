@@ -73,6 +73,7 @@ class EnvironmentDiscovery:
 	def mta_f(self,x):
 		return {
 			'master': 'Postfix',
+			'smtpd': 'Postfix',
 			'xinetd': 'Qmail',
 			'sendmail': 'Sendmail',
 			'exim': 'Exim',
@@ -301,23 +302,25 @@ def mailOrigin(mail,mta):
         # Last entry on the line indicates the userid. If userid is 110, mail is generated from Auth users. 
         # This is only true for Plesk servers. 
 	if mta=="Postfix":
-		if grepfunc(mail,"Received: by")[-2:-1][0][:-1]==110:	
-			return "Auth"
+		if len(grepfunc(mail,"Received: by"))>0:
+			if grepfunc(mail,"Received: by")[-2:-1][0][:-1]==110:	
+				return "Auth"
+			else:
+				return "PHP"
 		else:
-			return "PHP"
+			return "Incoming"
 	# Qmail: Examine the last "Recived:" line. Bounced emails with have more than one "Received:" lines.
         # If the received line contains an entry "network", mail is generated from Auth users; Otherwise from PHP script 
 	elif mta=="Qmail":
 		qmail_list=grepfunc(mail,"Received: \(qmail")
-		for i in qmail_list:
-			if re.search("network",i):	
-				return "Auth"
-			else: 
-				return "PHP"
+		if len(qmail_list)>0:
+			for i in qmail_list:
+				if re.search("network",i):	
+					return "Auth"
+				else: 
+					return "PHP"
 
 	
-#mailOrigin("3B77413C1B3","Postfix")
-
 
 def isSpamMail(mid,mta):
 	mail = viewMail(mid,mta)
@@ -327,28 +330,36 @@ def isSpamMail(mid,mta):
         #f.close()
 	
 	if mailOrigin(mail,mta)=="PHP":
-		if (len(intersection(spam_keywords, grepfunc(mail,"Subject:"), key=str.lower)) > 0): 
-			return "spam",grepfunc(mail,"X-PHP-Originating-Script")[1].split(':')[1]
-		elif (len(grepfunc(mail,"X-PHP-Originating-Script"))>0):
-			return "possible",grepfunc(mail,"X-PHP-Originating-Script")[1].split(':')[1]
+		if len(grepfunc(mail,"X-PHP-Originating-Script"))>0:
+			if (len(intersection(spam_keywords, grepfunc(mail,"Subject:"), key=str.lower)) > 0): 
+				return "spam",grepfunc(mail,"X-PHP-Originating-Script")[1].split(':')[1]
+			else:
+				return "possible",grepfunc(mail,"X-PHP-Originating-Script")[1].split(':')[1]
 		else:
 			return "enable","Enable PHP add_x_header"
+	elif mailOrigin(mail,mta)=="Auth":
+		return "auth","Auth"	
+
 	else:
-		return "auth","Auth"		
+		return "incoming","Incoming"	
 
 #print isSpam("3A77414C1B3","Postfix")	
 
 def isSpam(queue,mta):
 	def_spam = []
 	pos_spam = []
+	enable_spam = []
+	auth_spam = []
 	for i in getRandMailHeaders(queue,5):
-		print isSpamMail(i,mta)[0]
+		#print isSpamMail(i,mta)[0]
 		if isSpamMail(i,mta)[0]=="spam":
 			def_spam.append(isSpamMail(i,mta)[1])
 		elif isSpamMail(i,mta)[0]=="possible":
                 	pos_spam.append(isSpamMail(i,mta)[1])
+		elif isSpamMail(i,mta)[0]=="enable":
+			enable_spam.append(isSpamMail(i,mta)[1])
 		else:
-			print "No SPAM!!!!!"
+			auth_spam.append(isSpamMail(i,mta)[1])
        #### If queue is less than 2?????
         ###
 	if len(def_spam) > 2:
@@ -453,7 +464,7 @@ if (MTA=="Postfix") or (MTA=="Qmail"):
 
 	
 	for i in email_list:
-		if len(email_list[i]) > 50:
+		if len(email_list[i]) > 100:
 			print bcolors.WARNING + "Compromised Email is: ", i, " " +bcolors.ENDC
 
 	if float(PHP_VERSION[0:3]) >= 5.3:
