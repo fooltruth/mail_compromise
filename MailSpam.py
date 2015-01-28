@@ -1,8 +1,31 @@
 #!/usr/bin/python
 
 import os,random,subprocess,re,time,datetime,platform,sys
-
+from collections import defaultdict
+import fileinput
 spam_keywords=['sex','Vigara','Viigara' ,'aDult','Debt','already approved', 'already wealthy', 'amazing new discovery', 'amazing pranks', 'an excite game', 'and you save','nasty','babe','fuck']
+
+try:
+    defaultdict
+except NameError:
+    class defaultdict(dict):
+        """
+        A backport of `defaultdict` to Python 2.4
+        See http://docs.python.org/library/collections.html
+        """
+        def __new__(cls, default_factory=None):
+            return dict.__new__(cls)
+        def __init__(self, default_factory):
+            self.default_factory = default_factory
+        def __missing__(self, key):
+            try:
+                return self.default_factory()
+            except:
+                raise KeyError("Key '%s' not in dictionary" % key)
+        def __getitem__(self, key):
+            if not dict.__contains__(self, key):
+                dict.__setitem__(self, key, self.__missing__(key))
+            return dict.__getitem__(self, key)
 
 class bcolors:
     HEADER = '\033[95m'
@@ -81,7 +104,7 @@ class EnvironmentDiscovery:
 		if self.is_old_python()==False:
 			return platform.linux_distribution()
 		else:
-			return platform.linux_dist()
+			return platform.dist()
 	# Determine mail log path based on environment
         def mail_log_path(self,distro,plesk):
 		Redhat = set(['Redhat','CentOS'])
@@ -117,8 +140,10 @@ class EnvironmentDiscovery:
 
 
 class MailParser:
+	def maillog_size(self,path):
+		return os.path.getsize(path)
 	# Read X number of lines of maillog file from bottom. "tail" like function 
-	def tail(self,f, lines=5000):
+	def tail(self,f, lines=20000):
     		total_lines_wanted = lines
 
     		BLOCK_SIZE = 1024
@@ -150,7 +175,11 @@ class MailParser:
 	# Get list of email address authenticated with IPs
 	def auth_email_list(self,maillog_loc,pattern,pos1,pos2):
 		fo = open(maillog_loc, "r")
-		file = self.tail(fo)
+		#If maillog is bigger than 50MB, tail logs
+		if (self.maillog_size(maillog_loc) > 52428800):
+			file = self.tail(fo)
+		else:
+			file=fo.read()
 		auth_emails=defaultdict(list)
 		for i in file.split('\n'):
 			if re.search(pattern,i):
@@ -160,6 +189,7 @@ class MailParser:
 				auth_emails[l[pos1]].append(l[pos2])
         	fo.close()
 		return auth_emails
+
 
 # Find Mail queue size
 
@@ -222,8 +252,8 @@ def queue_size(queue_loc,mta):
                         mail_queue_num[i] = fcount(queue_loc+i)
 		print "Total Messages: ", mail_queue_num['remote']+ mail_queue_num['local']+mail_queue_num['bounce']
                 print "Bounced Mail Queue :", mail_queue_num['bounce']
-                print "Deffered Mail Queue :", mail_queue_num['remote']
-                print "Active Mail Queue :", mail_queue_num['local']
+                print "Remote Mail Queue :", mail_queue_num['remote']
+                print "Local Mail Queue :", mail_queue_num['local']
 		print "\n"
 	else:
 		print "MTA running on this server is not supported by this script"
@@ -247,7 +277,7 @@ def viewMail(mid,mta):
 	if mta=="Postfix":
 		read_mail = "postcat -q " + mid
 	elif mta=="Qmail":
-		read_mail = "find /var/qmail/queue/mess/ -name" + mid
+		read_mail = "find /var/qmail/queue/mess/ -name " + mid
         p = subprocess.Popen(read_mail, stdout=subprocess.PIPE, shell=True)
         output, err = p.communicate()
         return output
@@ -406,15 +436,26 @@ if (MTA=="Postfix") or (MTA=="Qmail"):
 	print "*************************"
 
 	#print e.mail_log_path(e.linux_dist()[0],e.is_plesk())
-	MAILLOG_PATH=e.mail_log_path(e.linux_dist()[0],e.is_plesk())
+	#MAILLOG_PATH=e.mail_log_path(e.linux_dist()[0],e.is_plesk())
+	MAILLOG_PATH="/var/log/alexlog1"
 	#print MAILLOG_PATH
 	MAIL_QUEUE_LOC=e.mail_queue_loc(MTA)
 	#print MAIL_QUEUE_LOC
-
-	#m=MailParser()
-	#m.auth_email_list(MAILLOG_PATH,)
-
+	Qmail_Pattern="logged in"
+	Postfix_Pattern="SASL_LOGIN"
+	POS1=7
+	POS2=13
+	m=MailParser()
+	email_list=m.auth_email_list(MAILLOG_PATH,Qmail_Pattern,POS1,POS2)
+        #print "File Size is: ", m.maillog_size(MAILLOG_PATH)
+	#print Mail Queue
 	queue_size(MAIL_QUEUE_LOC,MTA)
+
+	
+	for i in email_list:
+		if len(email_list[i]) > 50:
+			print bcolors.WARNING + "Compromised Email is: ", i, " " +bcolors.ENDC
+
 	if float(PHP_VERSION[0:3]) >= 5.3:
 		for i in range(3):
 			if verifySpam(MTA)==True:
