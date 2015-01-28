@@ -4,6 +4,15 @@ import os,random,subprocess,re,time,datetime,platform
 
 spam_keywords=['sex','Vigara','Viigara' ,'aDult','Debt','already approved', 'already wealthy', 'amazing new discovery', 'amazing pranks', 'an excite game', 'and you save','nasty','babe','fuck']
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
 
 # This class discovers all required feature of environement
 # * OS distribution
@@ -296,13 +305,15 @@ def isSpam(queue,mta):
 	def_spam = []
 	pos_spam = []
 	for i in getRandMailHeaders(queue,5):
+		print isSpamMail(i,mta)[0]
 		if isSpamMail(i,mta)[0]=="spam":
 			def_spam.append(isSpamMail(i,mta)[1])
 		elif isSpamMail(i,mta)[0]=="possible":
                 	pos_spam.append(isSpamMail(i,mta)[1])
 		else:
 			print "No SPAM!!!!!"
-	
+       #### If queue is less than 2?????
+        ###
 	if len(def_spam) > 2:
 		return "Spam", def_spam
 	elif len(pos_spam) > 2:
@@ -338,6 +349,7 @@ def verifySpam(mta):
 	n = 5
 	d_file = []
 	if isSpam(queue,mta)[0]=="Spam":
+		#print f_list
 		f_list = set(isSpam(queue,mta)[1])
 		for i in f_list:
 			for j in find_php_file(path,i).split('\n'):
@@ -347,6 +359,7 @@ def verifySpam(mta):
                 for i in f_list:
                         for j in find_php_file(path,i).split('\n'):
 				d_file.append(j)  
+	#print d_file
 	for key in d_file:
 		if isInfected(key)==0:
 			f_timestamp=datetime.datetime.fromtimestamp(os.path.getmtime(key))
@@ -355,7 +368,7 @@ def verifySpam(mta):
 				return True
 			else:
 				print "Infected file is: " +key
-				return False 				
+				return True 				
 		elif isInfected(key)==1:
 			f_timestamp=datetime.datetime.fromtimestamp(os.path.getmtime(key))	
 			if (datetime.datetime.now() - f_timestamp) < datetime.timedelta(days=2):
@@ -373,6 +386,7 @@ def verifySpam(mta):
 
 e = EnvironmentDiscovery()
 MTA=e.mta_type()
+PHP_VERSION=e.php_version()
 if (MTA=="Postfix") or (MTA=="Qmail"):
 	print "\n"
 	print "*************************"
@@ -380,22 +394,25 @@ if (MTA=="Postfix") or (MTA=="Qmail"):
 	print "*************************"
 	print "\n"
 	print "*************************"
-	print "Mail Service is: ", MTA
+	print bcolors.BOLD + "Mail Service is: ", MTA, "" + bcolors.ENDC
 	print "*************************"
 
 	#print e.mail_log_path(e.linux_dist()[0],e.is_plesk())
 	MAILLOG_PATH=e.mail_log_path(e.linux_dist()[0],e.is_plesk())
-	#print MAILLOG_PATH
+	print MAILLOG_PATH
 	MAIL_QUEUE_LOC=e.mail_queue_loc(MTA)
-	#print MAIL_QUEUE_LOC
+	print MAIL_QUEUE_LOC
 
 	#m=MailParser()
 	#m.auth_email_list(MAILLOG_PATH,)
 
 	queue_size(MAIL_QUEUE_LOC,MTA)
-	for i in range(3):
-		if verifySpam(MTA)==True:
-			break
+	if float(PHP_VERSION[0:3]) >= 5.3:
+		for i in range(3):
+			if verifySpam(MTA)==True:
+				break
+	else:
+		print bcolors.FAIL + "PHP version is:", PHP_VERSION, "PHP 5.3 and above is required to identify the spam file. Please refere to the following article to identify the script manaually. " +bcolors.ENDC
 
 #isSpam("/var/spool/postfix/deferred","Postfix")
 #verifySpam(MTA)		
