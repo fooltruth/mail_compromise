@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import os,random,subprocess,re,time,datetime,platform
+import os,random,subprocess,re,time,datetime,platform,sys
 
 spam_keywords=['sex','Vigara','Viigara' ,'aDult','Debt','already approved', 'already wealthy', 'amazing new discovery', 'amazing pranks', 'an excite game', 'and you save','nasty','babe','fuck']
 
@@ -24,6 +24,11 @@ class EnvironmentDiscovery:
 	def __init__(self):
 		pass   
 
+	def is_old_python(self):
+		 if sys.version_info[1]<=4:
+			return True
+		 else:
+			return False
         # identify PHP version
 	def php_version(self):
 		php_ver = "php -v | egrep PHP.\s*[0-9]\.[0-9] | awk '{print $2}'"
@@ -73,8 +78,10 @@ class EnvironmentDiscovery:
 
 	# Find Linux Distribution and version	
 	def linux_dist(self):
-		return platform.linux_distribution()
-
+		if self.is_old_python()==False:
+			return platform.linux_distribution()
+		else:
+			return platform.linux_dist()
 	# Determine mail log path based on environment
         def mail_log_path(self,distro,plesk):
 		Redhat = set(['Redhat','CentOS'])
@@ -387,11 +394,12 @@ def verifySpam(mta):
 e = EnvironmentDiscovery()
 MTA=e.mta_type()
 PHP_VERSION=e.php_version()
+#print e.is_old_python()
 if (MTA=="Postfix") or (MTA=="Qmail"):
-	print "\n"
-	print "*************************"
-	print "Plesk server? ", e.is_plesk()
-	print "*************************"
+	#print "\n"
+	#print "*************************"
+	#print "Plesk server? ", e.is_plesk()
+	#print "*************************"
 	print "\n"
 	print "*************************"
 	print bcolors.BOLD + "Mail Service is: ", MTA, "" + bcolors.ENDC
@@ -399,9 +407,9 @@ if (MTA=="Postfix") or (MTA=="Qmail"):
 
 	#print e.mail_log_path(e.linux_dist()[0],e.is_plesk())
 	MAILLOG_PATH=e.mail_log_path(e.linux_dist()[0],e.is_plesk())
-	print MAILLOG_PATH
+	#print MAILLOG_PATH
 	MAIL_QUEUE_LOC=e.mail_queue_loc(MTA)
-	print MAIL_QUEUE_LOC
+	#print MAIL_QUEUE_LOC
 
 	#m=MailParser()
 	#m.auth_email_list(MAILLOG_PATH,)
