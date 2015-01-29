@@ -466,7 +466,7 @@ if (MTA=="Postfix") or (MTA=="Qmail"):
 		POS2=13
 
 	m=MailParser()
-	email_list=m.auth_email_list(MAILLOG_PATH,Qmail_Pattern,POS1,POS2)
+	email_list=m.auth_email_list(MAILLOG_PATH,PATTERN,POS1,POS2)
         #print "File Size is: ", m.maillog_size(MAILLOG_PATH)
 	#print Mail Queue
 	queue_size(MAIL_QUEUE_LOC,MTA)
