@@ -1,13 +1,13 @@
 #!/usr/bin/python
 
 import os,random,subprocess,re,time,datetime,platform,sys
-from collections import defaultdict
+#from collections import defaultdict
 import fileinput
 spam_keywords=['sex','Vigara','Viigara' ,'aDult','Debt','already approved', 'already wealthy', 'amazing new discovery', 'amazing pranks', 'an excite game', 'and you save','nasty','babe','fuck']
 
 try:
     defaultdict
-except NameError:
+except (NameError,ImportError):
     class defaultdict(dict):
         """
         A backport of `defaultdict` to Python 2.4
@@ -447,15 +447,24 @@ if (MTA=="Postfix") or (MTA=="Qmail"):
 	print "*************************"
 
 	#print e.mail_log_path(e.linux_dist()[0],e.is_plesk())
-	#MAILLOG_PATH=e.mail_log_path(e.linux_dist()[0],e.is_plesk())
-	MAILLOG_PATH="/var/log/alexlog1"
+	MAILLOG_PATH=e.mail_log_path(e.linux_dist()[0],e.is_plesk())
+	#MAILLOG_PATH="/var/log/alexlog1"
 	#print MAILLOG_PATH
 	MAIL_QUEUE_LOC=e.mail_queue_loc(MTA)
 	#print MAIL_QUEUE_LOC
-	Qmail_Pattern="logged in"
-	Postfix_Pattern="SASL_LOGIN"
-	POS1=7
-	POS2=13
+	#Qmail_Pattern="logged in"
+	#Postfix_Pattern="SASL_LOGIN"
+	#POS1=7
+	#POS2=13
+	if MTA=="Postfix":
+		PATTERN="sasl_method=LOGIN"
+		POS1=8
+		POS2=6
+	elif MTA=="Qmail":
+		PATTERN="logged in"
+		POS1=7
+		POS2=13
+
 	m=MailParser()
 	email_list=m.auth_email_list(MAILLOG_PATH,Qmail_Pattern,POS1,POS2)
         #print "File Size is: ", m.maillog_size(MAILLOG_PATH)
