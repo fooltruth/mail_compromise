@@ -613,7 +613,7 @@ def deliverability():
 	rdns=0
 	#myIP=socket.gethostbyname(socket.gethostname())
 	ip_cmd = "curl -4 icanhazip.com"
-	ip_p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
+	ip_p = subprocess.Popen(ip_cmd, stdout=subprocess.PIPE, shell=True)
         output_ip, err_ip = ip_p.communicate()
 	myIP=output_ip    
 
