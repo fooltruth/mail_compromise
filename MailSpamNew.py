@@ -627,10 +627,14 @@ def deliverability():
 		print "-----------------------"
 		print "Reverse Record present:" + output
 
+	else:
+		rdns=0
+
 	s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	l=[]
 	good=1
 	try:
+		print "Connecting to SMTP....."
 		connect=s.connect((myIP,25))
 		b=s.recv(1024)
 		for w in b.split(" "):
