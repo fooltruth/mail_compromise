@@ -604,6 +604,25 @@ def mail_php_discovery():
 def black_list():
         black_list_checker(socket.gethostbyname(socket.gethostname()))
 
+def deliverability():
+	myIP=socket.gethostbyname(socket.gethostname())
+	cmd = "dig +short -x" + myIP
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
+        output, err = p.communicate()
+	print output
+	s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	try:
+		connect=s.connect((myIP,25))
+		print s.recv(1024)
+        except socket.timeout:
+		print "SMTP server timed out"
+	except socket.error:
+		print "Not able to connect to SMTP server"	
+	#banner=s.recv(1024)
+	#print banner
+	s.close()
+	
+	
 def version():
 	print "MailSpamDiscovery v1.0"
 
@@ -627,7 +646,7 @@ def all_func():
         black_list()
 
 def main():
-	myCommandDict = {"-s": mail_queue, "-m": mail_auth_discovery, "-p": mail_php_discovery, "-b": black_list,"-v": version, "-h":usage, "-a": all_func}
+	myCommandDict = {"-s": mail_queue, "-m": mail_auth_discovery, "-p": mail_php_discovery, "-b": black_list,"-v": version, "-h":usage, "-a": all_func,"-d":deliverability}
 	commandline_args = sys.argv[1:]
 	if len(commandline_args)>0:
     		for argument in commandline_args:
