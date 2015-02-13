@@ -494,9 +494,9 @@ PHP_VERSION=e.php_version()
 def mail_queue():
 	if (MTA=="Postfix") or (MTA=="Qmail"):
 		print "\n"
-        	print "*************************"
-        	print bcolors.BOLD + "Mail Service is: ", MTA, "" + bcolors.ENDC
-        	print "*************************"
+        	print bcolors.OKBLUE + "*************************"
+        	print  "Mail Service is: ", MTA, ""
+        	print "*************************" +bcolors.ENDC
 		#MAILLOG_PATH=e.mail_log_path(e.linux_dist()[0],e.is_plesk())
 		MAIL_QUEUE_LOC=e.mail_queue_loc(MTA)
 		queue_size(MAIL_QUEUE_LOC,MTA)
@@ -611,12 +611,12 @@ def deliverability():
         print "*************************" + bcolors.ENDC
 
 	rdns=0
-	myIP=socket.gethostbyname(socket.gethostname())
-	#ip_cmd = "curl -s -4 icanhazip.com"
-	#ip_p = subprocess.Popen(ip_cmd, stdout=subprocess.PIPE, shell=True)
-        #output_ip, err_ip = ip_p.communicate()
-	#myIP=output_ip.strip()
-	#print myIP    
+	#myIP=socket.gethostbyname(socket.gethostname())
+	ip_cmd = "curl -s -4 icanhazip.com"
+	ip_p = subprocess.Popen(ip_cmd, stdout=subprocess.PIPE, shell=True)
+        output_ip, err_ip = ip_p.communicate()
+	myIP=output_ip.strip()
+	print myIP    
 
 	cmd = "dig +short -x " + myIP
 	print cmd
