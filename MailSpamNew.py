@@ -144,7 +144,7 @@ class EnvironmentDiscovery:
                         return platform.dist()
         # Determine mail log path based on environment
         def mail_log_path(self,distro,plesk):
-                Redhat = set(['Redhat','CentOS'])
+                Redhat = set(['Redhat','CentOS','redhat','centos'])
                 Debian = set(['Ubuntu','Debian'])
 
                 if plesk:
@@ -605,24 +605,76 @@ def black_list():
         black_list_checker(socket.gethostbyname(socket.gethostname()))
 
 def deliverability():
+	print "\n"
+        print bcolors.OKBLUE + "*************************"
+        print "Checking 3-way MailCheck"
+        print "*************************" + bcolors.ENDC
+
+	rdns=0
 	myIP=socket.gethostbyname(socket.gethostname())
 	cmd = "dig +short -x" + myIP
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
         output, err = p.communicate()
-	print output
+	if len(output)>0:
+		print "Reverse Record Check"
+		print "-----------------------"
+		print "Reverse Record present:" + output
+
 	s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	l=[]
+	good=1
 	try:
 		connect=s.connect((myIP,25))
-		print s.recv(1024)
+		b=s.recv(1024)
+		for w in b.split(" "):
+                	l.append(w)
+		if len(output)>0 and output.strip()[:-1]==l[1]:
+			rdns=1
+		else: 
+			rdns=0
+
+		print "SMTP port check"
+		print "-------------------"
+		print "Connected to " + myIP +" on port 25, mail banner says: " + l[1]
+		
+		cmd_a = "dig +short " + l[1]
+                p1 = subprocess.Popen(cmd_a, stdout=subprocess.PIPE, shell=True)
+                output_a, err_a = p1.communicate()
+		output_a=output_a.strip()
+ 		if len(output_a)>0:
+			print "Found 'A' record for " +l[1]+": "+output_a
+		else:
+			print "No 'A' record found for: " +output_a
+			good=0
+		if myIP==output_a:
+			print "DNS 'A' record for "+ l[1] + "matches the given IP " +output_a
+		else: 
+			print "DNS 'A' record for "+ l[1] + "does NOT matches the given IP " +output_a
+			good=0
+
         except socket.timeout:
+		print "SMTP port check"
+                print "-------------------"
 		print "SMTP server timed out"
+		good=0
 	except socket.error:
-		print "Not able to connect to SMTP server"	
-	#banner=s.recv(1024)
-	#print banner
+		print "SMTP port check"
+                print "-------------------"
+		print "Not able to connect to SMTP server"
+		good=0	
 	s.close()
 	
-	
+        print "\nResults"
+	print "-----------------"	
+	if rdns==1 and good==1:
+		print bcolors.OKGREEN + "GOOD:" +bcolors.ENDC + "Reverse record matches SMTP banner, 3-way mailcheck PASS."
+	elif rdns==1 and good==0:
+		print bcolors.WARNING + "BAD:" +bcolors.ENDC + "Reverse record matches SMTP banner but 3-way mail check FAIL."
+	elif rdns==0 and good==1:
+		print bcolors.WARNING+ "BAD:" +bcolors.ENDC +"Reverse record does NOT matches SMTP banner but 3-way mail check PASS."
+	elif rdns==0 and good==0:
+		print bcolors.WARNING +"BAD:" +bcolors.ENDC +"Reverse record does NOT matches SMTP banner but 3-way mail check FAIL."
+
 def version():
 	print "MailSpamDiscovery v1.0"
 
@@ -643,6 +695,7 @@ def all_func():
 	mail_queue()
         mail_auth_discovery()
         mail_php_discovery()
+	deliverability()
         black_list()
 
 def main():
