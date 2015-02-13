@@ -611,7 +611,7 @@ def deliverability():
         print "*************************" + bcolors.ENDC
 
 	rdns=0
-	#myIP=socket.gethostbyname(socket.gethostname())
+	myIPLocal=socket.gethostbyname(socket.gethostname())
 	ip_cmd = "curl -s -4 icanhazip.com"
 	ip_p = subprocess.Popen(ip_cmd, stdout=subprocess.PIPE, shell=True)
         output_ip, err_ip = ip_p.communicate()
@@ -635,7 +635,7 @@ def deliverability():
 	good=1
 	try:
 		print "Connecting to SMTP....."
-		connect=s.connect((myIP,25))
+		connect=s.connect((myIPLocal,25))
 		b=s.recv(1024)
 		for w in b.split(" "):
                 	l.append(w)
