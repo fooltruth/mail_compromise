@@ -618,7 +618,7 @@ def deliverability():
 	myIP=output_ip.strip()
 	print myIP    
 
-	cmd = "dig +short -x" + myIP
+	cmd = "dig +short -x " + myIP
 	print cmd
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
         output, err = p.communicate()
