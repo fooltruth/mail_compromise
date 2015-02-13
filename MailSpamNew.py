@@ -29,13 +29,14 @@ except (NameError,ImportError):
 
 
 urllib.urlretrieve("http://7ea64f9d972b911b7d5a-d87343827908bf30b98b24c2e965bc85.r25.cf1.rackcdn.com/mail.txt", filename="spamList.txt")
+#urllib.urlretrieve("http://7ea64f9d972b911b7d5a-d87343827908bf30b98b24c2e965bc85.r25.cf1.rackcdn.com/mail.txt", filename="spamList.txt")
 spam_keywords = [line.strip() for line in open("spamList.txt", 'r')]
 
 def black_list_checker(myIP):
         bls = ["zen.spamhaus.org", "spam.abuse.ch", "cbl.abuseat.org", "virbl.dnsbl.bit.nl", "dnsbl.inps.de",
                 "ix.dnsbl.manitu.net", "dnsbl.sorbs.net", "bl.spamcannibal.org", "bl.spamcop.net",
                 "xbl.spamhaus.org", "pbl.spamhaus.org", "dnsbl-1.uceprotect.net", "dnsbl-2.uceprotect.net",
-                "dnsbl-3.uceprotect.net", "db.wpbl.info"]
+                "dnsbl-3.uceprotect.net", "db.wpbl.info","b.barracudacentral.org","ubl.unsubscore.com","hostkarma.junkemailfilter.com"]
         pattern = r"\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b"
 
         if re.match(pattern, myIP):
