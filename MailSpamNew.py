@@ -611,7 +611,12 @@ def deliverability():
         print "*************************" + bcolors.ENDC
 
 	rdns=0
-	myIP=socket.gethostbyname(socket.gethostname())
+	#myIP=socket.gethostbyname(socket.gethostname())
+	ip_cmd = "curl -4 icanhazip.com"
+	ip_p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
+        output_ip, err_ip = ip_p.communicate()
+	myIP=output_ip    
+
 	cmd = "dig +short -x" + myIP
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
         output, err = p.communicate()
@@ -632,7 +637,7 @@ def deliverability():
 			rdns=1
 		else: 
 			rdns=0
-
+		print "\n"
 		print "SMTP port check"
 		print "-------------------"
 		print "Connected to " + myIP +" on port 25, mail banner says: " + l[1]
