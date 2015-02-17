@@ -699,6 +699,7 @@ def usage():
         print "-p               discover PHP compromised script"
 	print "-a               discover mail size, compromised mail account and PHP, and blacklist"
         print "-b               check black list"
+        print "-c               3-way mail check"
         print "-v               version"
 	print "-h               help"
 
@@ -710,7 +711,7 @@ def all_func():
         black_list()
 
 def main():
-	myCommandDict = {"-s": mail_queue, "-m": mail_auth_discovery, "-p": mail_php_discovery, "-b": black_list,"-v": version, "-h":usage, "-a": all_func,"-d":deliverability}
+	myCommandDict = {"-s": mail_queue, "-m": mail_auth_discovery, "-p": mail_php_discovery, "-b": black_list,"-v": version, "-h":usage, "-a": all_func,"-c":deliverability}
 	commandline_args = sys.argv[1:]
 	if len(commandline_args)>0:
     		for argument in commandline_args:
