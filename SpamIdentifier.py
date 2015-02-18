@@ -502,6 +502,10 @@ def mail_queue():
 		queue_size(MAIL_QUEUE_LOC,MTA)
 
 def mail_auth_discovery():
+	print "\n"
+        print bcolors.OKBLUE + "*************************"
+        print "Checking Mail Account Compromise"
+        print "*************************" + bcolors.ENDC
 	if (MTA=="Postfix") or (MTA=="Qmail"):
 		MAILLOG_PATH=e.mail_log_path(e.linux_dist()[0],e.is_plesk())
 		if MTA=="Postfix":
@@ -525,6 +529,10 @@ def mail_auth_discovery():
 			print bcolors.FAIL + "No compromised mail account found\n" +bcolors.ENDC
 			
 def mail_php_discovery():
+	print "\n"
+        print bcolors.OKBLUE + "*************************"
+        print "Checking PHP Script Compromise"
+        print "*************************" + bcolors.ENDC
 	if (MTA=="Postfix") or (MTA=="Qmail"):
 		if float(PHP_VERSION[0:3]) >= 5.3:
                         for i in range(3):
