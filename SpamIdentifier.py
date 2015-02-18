@@ -534,7 +534,7 @@ def mail_php_discovery():
                                         if outcome.has_key('infected')==True:
 						print "Infected files are: "
 						for x in range (0,len(outcome['infected'])):
-                                                        print bcolors.OKGREEN ""+outcome['infected'][x]+bcolors.ENDC
+                                                        print bcolors.OKGREEN +outcome['infected'][x]+bcolors.ENDC
                                                 #print bcolors.OKGREEN + "Infected file is: ", outcome['infected'], +bcolors.ENDC
                                                 break
                                         elif outcome.has_key('manual')==True:
