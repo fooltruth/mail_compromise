@@ -144,7 +144,7 @@ class EnvironmentDiscovery:
                         return platform.dist()
         # Determine mail log path based on environment
         def mail_log_path(self,distro,plesk):
-                Redhat = set(['Redhat','CentOS','redhat','centos'])
+                Redhat = set(['Redhat','CentOS','redhat','centos','Red Hat Enterprise Linux Server'])
                 Debian = set(['Ubuntu','Debian'])
 
                 if plesk:
@@ -532,7 +532,10 @@ def mail_php_discovery():
                                 #print outcome
                                 if len(outcome)>0:
                                         if outcome.has_key('infected')==True:
-                                                print bcolors.OKGREEN + "Infected file is: ", outcome['infected'], +bcolors.ENDC
+						print "Infected files are: "
+						for x in range (0,len(outcome['infected'])):
+                                                        print bcolors.OKGREEN ""+outcome['infected'][x]+bcolors.ENDC
+                                                #print bcolors.OKGREEN + "Infected file is: ", outcome['infected'], +bcolors.ENDC
                                                 break
                                         elif outcome.has_key('manual')==True:
                                                 print "Verify files manually: "
