@@ -737,6 +737,12 @@ def all_func():
 	deliverability()
         black_list()
 
+def delete_file(myfile):
+	try:
+        	os.remove(myfile)
+	except OSError, e:  ## if failed, report it back to the user ##
+        	print ("Not able to delete the %s file. Please delete manually.  %s - %s." % (e.filename,e.strerror))
+
 def main():
 	myCommandDict = {"-s": mail_queue, "-m": mail_auth_discovery, "-p": mail_php_discovery, "-b": black_list,"-v": version, "-h":usage, "-a": all_func,"-c":deliverability}
 	commandline_args = sys.argv[1:]
@@ -748,6 +754,7 @@ def main():
 				usage()
 	else:
 		usage()
+	delete_file("spamList.txt")
 
 if __name__ == "__main__":
     main()
