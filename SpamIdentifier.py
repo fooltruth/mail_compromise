@@ -413,6 +413,7 @@ def isSpam(queue,mta):
 					subject=" "
 					for i in grepfunc(mail,"Subject:"):
 						subject = subject + " "+ i
+						print subject
 					print subject
 					
                                 else:
