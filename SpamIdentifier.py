@@ -401,12 +401,13 @@ def isSpam(queue,mta):
 	if len(mail_header_list)==0:
 		print "No mails in the queue. Mail header check is ignored"
         for i in mail_header_list:
-		print "Inspecting Mail Header"+i
+		print "Inspecting Mail Header "+i
                 mail = viewMail(i,mta)
                 if mailOrigin(mail,mta)=="PHP":
                         if len(grepfunc(mail,"X-PHP-Originating-Script"))>0:
                                 if (len(intersection(spam_keywords, grepfunc(mail,"Subject:"), key=str.lower)) > 0):
                                         def_spam.append(grepfunc(mail,"X-PHP-Originating-Script")[1].split(':')[1])
+					print "Subject of mail header "+ i + " contains spam keywords"
                                 else:
                                         pos_spam.append(grepfunc(mail,"X-PHP-Originating-Script")[1].split(':')[1])
                         else:
@@ -431,7 +432,6 @@ def isSpam(queue,mta):
 def find_php_file(path,fname):
 	fname=fname.split(".php")[0]
 	fname=fname+".php"
-	print fname
         cmd= "locate /" +fname
         #print cmd
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -446,7 +446,7 @@ def find_php_file(path,fname):
 
 ## if 0 return then file is infected; 1 file is not infected; 2 - file is not there
 def isInfected(fname):
-	print "Inspecting file"+fname+"for eval, base64_decode and shell_exec........."
+	print "Inspecting file "+fname+" for any malcious contnet........."
         cmd = "egrep 'passthru|shell_exec|base64_decode|edoced_46esab|eval' "  + fname
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, stderr=subprocess.STDOUT)
         output, err = p.communicate()
