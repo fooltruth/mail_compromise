@@ -407,14 +407,16 @@ def isSpam(queue,mta):
                         if len(grepfunc(mail,"X-PHP-Originating-Script"))>0:
                                 if (len(intersection(spam_keywords, grepfunc(mail,"Subject:"), key=str.lower)) > 0):
                                         def_spam.append(grepfunc(mail,"X-PHP-Originating-Script")[1].split(':')[1])
-					print "'X-PHP-Originating-Script' exist on mail header "
-					print grepfunc(mail,"X-PHP-Originating-Script")[1]
-					print "Subject of mail header "+ i + " contain spam keywords and the Subject is: "+str(grepfunc(mail,"Subject:"))
+					print "'X-PHP-Originating-Script' exist on mail header"
+					print grepfunc(mail,"X-PHP-Originating-Script")[1].split(':')[1]
+					print "Subject of mail header "+ i + " contain spam keywords and the Subject is: "
+					for i in grepfunc(mail,"Subject:"):
+						print " "+ i + " "
 					
                                 else:
                                         pos_spam.append(grepfunc(mail,"X-PHP-Originating-Script")[1].split(':')[1])
-					print "'X-PHP-Originating-Script' exist on mail header "
-					print grepfunc(mail,"X-PHP-Originating-Script")[1]
+					print "'X-PHP-Originating-Script' exist on mail header"
+					print grepfunc(mail,"X-PHP-Originating-Script")[1].split(':')[1]
 					print "Subject of mail header "+ i + " does not contain spam keywords"
 					
                         else:
