@@ -397,6 +397,7 @@ def isSpam(queue,mta):
         enable_spam = []
         auth_spam = []
         incoming_mail = []
+	mails = {}
 	mail_header_list=getRandMailHeaders(queue,5)
 	if len(mail_header_list)==0:
 		print "No mails in the queue. Mail header check is ignored"
@@ -408,9 +409,11 @@ def isSpam(queue,mta):
                                 if (len(intersection(spam_keywords, grepfunc(mail,"Subject:"), key=str.lower)) > 0):
                                         def_spam.append(grepfunc(mail,"X-PHP-Originating-Script")[1].split(':')[1])
 					print "Subject of mail header "+ i + " contain spam keywords"
+					print mail
                                 else:
                                         pos_spam.append(grepfunc(mail,"X-PHP-Originating-Script")[1].split(':')[1])
 					print "Subject of mail header "+ i + " does not contain spam keywords"
+					print mail
                         else:
                                 enable_spam.append("Enable PHP add_x_header")
                 elif mailOrigin(mail,mta)=="Auth":
@@ -419,6 +422,7 @@ def isSpam(queue,mta):
                 else:
                         incoming_mail.append("incoming")
 
+		mails['i']=mail
         if len(def_spam) > 2:
                 return "Spam", def_spam
         elif len(pos_spam) > 2:
@@ -483,8 +487,9 @@ def verifySpam(mta):
         inf_d=defaultdict(list)
         for key in d_file:
                 #print key
-		value = isInfected(key)
+		#value = isInfected(key)
                 if key!='':
+			value = isInfected(key)
                         if value==0:
                                 inf_d['infected'].append(key)
                         elif value==1:
