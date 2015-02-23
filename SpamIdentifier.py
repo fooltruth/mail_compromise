@@ -409,7 +409,7 @@ def isSpam(queue,mta):
                                         def_spam.append(grepfunc(mail,"X-PHP-Originating-Script")[1].split(':')[1])
 					print "'X-PHP-Originating-Script' exist on mail header "
 					print grepfunc(mail,"X-PHP-Originating-Script")[1]
-					print "Subject of mail header "+ i + " contain spam keywords and the Subject is: "+grepfunc(mail,"Subject:")
+					print "Subject of mail header "+ i + " contain spam keywords and the Subject is: "+str(grepfunc(mail,"Subject:"))
 					
                                 else:
                                         pos_spam.append(grepfunc(mail,"X-PHP-Originating-Script")[1].split(':')[1])
