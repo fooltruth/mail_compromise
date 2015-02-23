@@ -407,9 +407,10 @@ def isSpam(queue,mta):
                         if len(grepfunc(mail,"X-PHP-Originating-Script"))>0:
                                 if (len(intersection(spam_keywords, grepfunc(mail,"Subject:"), key=str.lower)) > 0):
                                         def_spam.append(grepfunc(mail,"X-PHP-Originating-Script")[1].split(':')[1])
-					print "Subject of mail header "+ i + " contains spam keywords"
+					print "Subject of mail header "+ i + " contain spam keywords"
                                 else:
                                         pos_spam.append(grepfunc(mail,"X-PHP-Originating-Script")[1].split(':')[1])
+					print "Subject of mail header "+ i + " does not contain spam keywords"
                         else:
                                 enable_spam.append("Enable PHP add_x_header")
                 elif mailOrigin(mail,mta)=="Auth":
@@ -478,7 +479,7 @@ def verifySpam(mta):
                                 d_file.append(j)
         else:
                 n=1
-        #print d_file
+        print d_file
         inf_d=defaultdict(list)
         for key in d_file:
                 #print key
