@@ -483,10 +483,11 @@ def verifySpam(mta):
         inf_d=defaultdict(list)
         for key in d_file:
                 #print key
+		value = isInfected(key)
                 if key!='':
-                        if isInfected(key)==0:
+                        if value==0:
                                 inf_d['infected'].append(key)
-                        elif isInfected(key)==1:
+                        elif value==1:
                                 f_timestamp=datetime.datetime.fromtimestamp(os.path.getmtime(key))
                                 if (datetime.datetime.now() - f_timestamp) < datetime.timedelta(days=2):
                                         inf_d['manual'].append(key)
