@@ -429,7 +429,7 @@ def isSpam(queue,mta):
                 return "Incoming",incoming_mail
 
 def find_php_file(path,fname):
-        cmd= "locate /" +fname
+        cmd= "locate /" +fname+"$"
         #print cmd
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         output, err = p.communicate()
