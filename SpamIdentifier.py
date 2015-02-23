@@ -397,7 +397,11 @@ def isSpam(queue,mta):
         enable_spam = []
         auth_spam = []
         incoming_mail = []
-        for i in getRandMailHeaders(queue,5):
+	mail_header_list=getRandMailHeaders(queue,5)
+	if len(mail_header_list)==0:
+		print "No mails in the queue. Mail header check is ignored"
+        for i in mail_header_list:
+		print "Inspecting Mail Header"+i
                 mail = viewMail(i,mta)
                 if mailOrigin(mail,mta)=="PHP":
                         if len(grepfunc(mail,"X-PHP-Originating-Script"))>0:
@@ -439,6 +443,7 @@ def find_php_file(path,fname):
 
 ## if 0 return then file is infected; 1 file is not infected; 2 - file is not there
 def isInfected(fname):
+	print "Inspecting file"+fname+"for eval, base64_decode and shell_exec........."
         cmd = "egrep 'passthru|shell_exec|base64_decode|edoced_46esab|eval' "  + fname
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, stderr=subprocess.STDOUT)
         output, err = p.communicate()
@@ -536,6 +541,12 @@ def mail_php_discovery():
 	if (MTA=="Postfix") or (MTA=="Qmail"):
 		if float(PHP_VERSION[0:3]) >= 5.3:
                         for i in range(3):
+				if i==0:
+					print "Checking first collection of 5 random mail headers....."
+				elif i==1:
+					print "Checking second collection of 5 random mail headers....."
+				else:
+					print "Checking last collection of 5 random mail headers....."
                                 outcome=verifySpam(MTA)
                                 #print outcome
                                 if len(outcome)>0:
@@ -613,7 +624,12 @@ def mail_php_discovery():
 #
         #yIP=socket.gethostbyname(socket.gethostname())
 def black_list():
-        black_list_checker(socket.gethostbyname(socket.gethostname()))
+	ip_cmd = "curl -s -4 icanhazip.com"
+        ip_p = subprocess.Popen(ip_cmd, stdout=subprocess.PIPE, shell=True)
+        output_ip, err_ip = ip_p.communicate()
+        myIP=output_ip.strip()
+
+        black_list_checker(socket.gethostbyname(myIP))
 
 def deliverability():
 	print "\n"
