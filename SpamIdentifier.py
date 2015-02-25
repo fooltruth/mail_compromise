@@ -646,9 +646,6 @@ def deliverability():
 		output_a=output_a.strip()
 		if myIPLocal==output_a:
 			output_a=myIP
-			print "Test.................................."
-		print myIPLocal
-		print output_a
  		if len(output_a)>0:
 			print "Found 'A' record for " +l[1]+": "+output_a
 		else:
