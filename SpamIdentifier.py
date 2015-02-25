@@ -460,7 +460,7 @@ def find_php_file(path,fname):
 
 ## if 0 return then file is infected; 1 file is not infected; 2 - file is not there
 def isInfected(fname):
-	print "Inspecting file "+fname+" for any malcious contnet........."
+	print "\t\t\tInspecting file "+fname+" for any malcious contnet........."
         cmd = "egrep 'passthru|shell_exec|base64_decode|edoced_46esab|eval' "  + fname
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, stderr=subprocess.STDOUT)
         output, err = p.communicate()
@@ -572,7 +572,7 @@ def mail_php_discovery():
                                         if outcome.has_key('infected')==True:
 						print "Infected files are: "
 						for x in range (0,len(outcome['infected'])):
-                                                        print bcolors.OKFAIL +outcome['infected'][x]+bcolors.ENDC
+                                                        print bcolors.FAIL +outcome['infected'][x]+bcolors.ENDC
                                                 #print bcolors.OKGREEN + "Infected file is: ", outcome['infected'], +bcolors.ENDC
                                                 break
                                         elif outcome.has_key('manual')==True:
