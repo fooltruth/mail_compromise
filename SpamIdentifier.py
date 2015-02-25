@@ -69,6 +69,7 @@ class bcolors:
     FAIL = '\033[91m'
     ENDC = '\033[0m'
     BOLD = '\033[1m'
+    CYAN = '\033[96m'
     UNDERLINE = '\033[4m'
 
 # This class discovers all required feature of environement
@@ -401,7 +402,7 @@ def isSpam(queue,mta):
 	if len(mail_header_list)==0:
 		print "No mails in the queue. Mail header check is ignored"
         for i in mail_header_list:
-		print "Inspecting Mail Header "+i
+		print "\tInspecting Mail Header "+i
                 mail = viewMail(i,mta)
                 if mailOrigin(mail,mta)=="PHP":
                         if len(grepfunc(mail,"X-PHP-Originating-Script"))>0:
@@ -409,7 +410,7 @@ def isSpam(queue,mta):
                                         def_spam.append(grepfunc(mail,"X-PHP-Originating-Script")[1].split(':')[1])
 					print "'X-PHP-Originating-Script' exist on mail header"
 					print grepfunc(mail,"X-PHP-Originating-Script")[1].split(':')[1]
-					print "Subject of mail header "+ i + " contain spam keywords and the Subject is: "
+					print "\t\tSubject of mail header "+ i + " contain spam keywords and the Subject is: "
 					subject="Subject is "
 					for i in grepfunc(mail,"Subject:"):
 						subject = subject + i
@@ -417,9 +418,9 @@ def isSpam(queue,mta):
 					
                                 else:
                                         pos_spam.append(grepfunc(mail,"X-PHP-Originating-Script")[1].split(':')[1])
-					print "'X-PHP-Originating-Script' exist on mail header"
+					print "\t\t'X-PHP-Originating-Script' exist on mail header"
 					print grepfunc(mail,"X-PHP-Originating-Script")[1].split(':')[1]
-					print "Subject of mail header "+ i + " does not contain spam keywords"
+					print "\t\tSubject of mail header "+ i + " does not contain spam keywords"
 					
                         else:
                                 enable_spam.append("Enable PHP add_x_header")
@@ -558,11 +559,11 @@ def mail_php_discovery():
 		if float(PHP_VERSION[0:3]) >= 5.3:
                         for i in range(3):
 				if i==0:
-					print "Inspecting 5 random mail headers for PHP/CGI compromise....."
+					print "Picking 5 random mail headers for PHP/CGI compromise....." 
 				elif i==1:
-					print "Insufficient evidence on previous 5 random mail headers, therefore insecting another 5 random mail headers....."
+					print "Insufficient evidence on previous 5 random mail headers, therefore picking another 5 random mail headers....."
 				else:
-					print "Insufficient evidence on previous 10 random mail headers, therefore insecting another 5 random mail headers....."
+					print "Insufficient evidence on previous 10 random mail headers, therefore picking another 5 random mail headers....."
                                 outcome=verifySpam(MTA)
                                 #print outcome
                                 if len(outcome)>0:
@@ -615,7 +616,7 @@ def deliverability():
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
         output, err = p.communicate()
 	if len(output)>0:
-		print "Reverse Record Check"
+		print "Reverse Record Check" 
 		print "-----------------------"
 		print "Reverse Record present:" + output
 
@@ -635,8 +636,8 @@ def deliverability():
 			rdns=1
 		else: 
 			rdns=0
-		print "\n"
-		print "SMTP port check"
+		
+		print  "SMTP port check" 
 		print "-------------------"
 		print "Connected to " + myIP +" on port 25, mail banner says: " + l[1]
 		
@@ -658,12 +659,12 @@ def deliverability():
 			good=0
 
         except socket.timeout:
-		print "SMTP port check"
+		print "SMTP port check" 
                 print "-------------------"
 		print "SMTP server timed out"
 		good=0
 	except socket.error:
-		print "SMTP port check"
+		print "SMTP port check" 
                 print "-------------------"
 		print "Not able to connect to SMTP server"
 		good=0	
@@ -672,13 +673,13 @@ def deliverability():
         print "\nResults"
 	print "-----------------"	
 	if rdns==1 and good==1:
-		print bcolors.OKGREEN + "GOOD:" +bcolors.ENDC + "Reverse record matches SMTP banner, 3-way mailcheck PASS."
+		print bcolors.OKGREEN + "GOOD: " +bcolors.ENDC + "Reverse record matches SMTP banner, 3-way mailcheck PASS."
 	elif rdns==1 and good==0:
-		print bcolors.WARNING + "BAD:" +bcolors.ENDC + "Reverse record matches SMTP banner but 3-way mail check FAIL."
+		print bcolors.WARNING + "BAD: " +bcolors.ENDC + "Reverse record matches SMTP banner but 3-way mail check FAIL."
 	elif rdns==0 and good==1:
-		print bcolors.WARNING+ "BAD:" +bcolors.ENDC +"Reverse record does NOT matches SMTP banner but 3-way mail check PASS."
+		print bcolors.WARNING+ "BAD: " +bcolors.ENDC +"Reverse record does NOT matches SMTP banner but 3-way mail check PASS."
 	elif rdns==0 and good==0:
-		print bcolors.WARNING +"BAD:" +bcolors.ENDC +"Reverse record does NOT matches SMTP banner but 3-way mail check FAIL."
+		print bcolors.WARNING +"BAD: " +bcolors.ENDC +"Reverse record does NOT matches SMTP banner but 3-way mail check FAIL."
 
 def version():
 	print "MailSpamDiscovery v1.0"
@@ -688,11 +689,11 @@ def usage():
 	print ("Example: %s -v" % sys.argv[0])
 	print "\n"
         print "Available options:"
-        print "-s               display mail queue size"
+        print "-s               display mail queue statistics"
         print "-m               disover compromised mail account"
         print "-p               discover PHP compromised script"
 	print "-a               discover mail size, compromised mail account and PHP, and blacklist"
-        print "-b               check black list"
+        print "-b               check blacklist"
         print "-c               3-way mail check"
         print "-v               version"
 	print "-h               help"
