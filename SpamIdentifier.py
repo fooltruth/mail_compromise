@@ -461,7 +461,7 @@ def find_php_file(path,fname):
 ## if 0 return then file is infected; 1 file is not infected; 2 - file is not there
 def isInfected(fname):
 	print "\t\t\tInspecting file "+fname+" for any malcious contnet........."
-        cmd = "egrep 'passthru|shell_exec|base64_decode|edoced_46esab|eval' "  + fname
+        cmd = "egrep 'passthru|shell_exec|base64_decode|edoced_46esab|eval(' "  + fname
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True, stderr=subprocess.STDOUT)
         output, err = p.communicate()
         return p.returncode
