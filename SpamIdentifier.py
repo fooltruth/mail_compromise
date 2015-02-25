@@ -407,28 +407,30 @@ def isSpam(queue,mta):
                 if mailOrigin(mail,mta)=="PHP":
                         if len(grepfunc(mail,"X-PHP-Originating-Script"))>0:
                                 if (len(intersection(spam_keywords, grepfunc(mail,"Subject:"), key=str.lower)) > 0):
-                                        def_spam.append(grepfunc(mail,"X-PHP-Originating-Script")[1].split(':')[1])
-					print "'X-PHP-Originating-Script' exist on mail header"
-					print grepfunc(mail,"X-PHP-Originating-Script")[1].split(':')[1]
-					print "\t\tSubject of mail header "+ i + " contain spam keywords and the Subject is: "
-					subject="Subject is "
-					for i in grepfunc(mail,"Subject:"):
-						subject = subject + i
-					print subject
+                                        def_spam.append(grepfunc(mail,"X-PHP-Originating-Script")[1].split(':')[1])	
+					print "\t\tEmail generated using script: ",grepfunc(mail,"X-PHP-Originating-Script")[1].split(':')[1]
+					#print "\t\tSubject of mail header "+ i + " contain spam keywords and the Subject is: "
+					#subject="Subject is "
+					#for i in grepfunc(mail,"Subject:"):
+					#	subject = subject + i
+					#print subject
 					
                                 else:
                                         pos_spam.append(grepfunc(mail,"X-PHP-Originating-Script")[1].split(':')[1])
-					print "\t\t'X-PHP-Originating-Script' exist on mail header"
-					print grepfunc(mail,"X-PHP-Originating-Script")[1].split(':')[1]
-					print "\t\tSubject of mail header "+ i + " does not contain spam keywords"
+					#print "\t\t'X-PHP-Originating-Script' exist on mail header"
+					print "\t\tEmail generated using script: ", grepfunc(mail,"X-PHP-Originating-Script")[1].split(':')[1]
+					#print "\t\tSubject of mail header "+ i + " does not contain spam keywords"
 					
                         else:
                                 enable_spam.append("Enable PHP add_x_header")
+				print "\t\t No 'X-PHP-Originating-Script' listed on mail header"
                 elif mailOrigin(mail,mta)=="Auth":
                         auth_spam.append("Auth")
+			print "\t\tEmail is sent using authentication"
 
                 else:
                         incoming_mail.append("incoming")
+			print "\t\tIncoming mail header"
 
         if len(def_spam) > 2:
                 return "Spam", def_spam
