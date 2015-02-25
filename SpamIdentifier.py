@@ -644,6 +644,9 @@ def deliverability():
                 p1 = subprocess.Popen(cmd_a, stdout=subprocess.PIPE, shell=True)
                 output_a, err_a = p1.communicate()
 		output_a=output_a.strip()
+		if myIPLocal==output_a:
+			output_a=myIPLocal
+
  		if len(output_a)>0:
 			print "Found 'A' record for " +l[1]+": "+output_a
 		else:
