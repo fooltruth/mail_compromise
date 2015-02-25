@@ -524,9 +524,9 @@ def mail_queue():
 
 def mail_auth_discovery():
 	print "\n"
-        print bcolors.OKBLUE + "*************************"
+        print bcolors.OKBLUE + "*********************************"
         print "Checking Mail Account Compromise"
-        print "*************************" + bcolors.ENDC
+        print "*********************************" + bcolors.ENDC
 	if (MTA=="Postfix") or (MTA=="Qmail"):
 		MAILLOG_PATH=e.mail_log_path(e.linux_dist()[0],e.is_plesk())
 		if MTA=="Postfix":
@@ -544,32 +544,32 @@ def mail_auth_discovery():
 		found=0
 		for i in email_list:
                 	if len(email_list[i]) > 100:
-                        	print bcolors.WARNING + "Compromised Email is: ", i, " " +bcolors.ENDC
+                        	print bcolors.FAIL + "Compromised Email is: ", i, " " +bcolors.ENDC
 				found=1
 		if found==0:
-			print bcolors.FAIL + "No compromised mail account found\n" +bcolors.ENDC
+			print bcolors.OKGREEN + "No compromised mail account found\n" +bcolors.ENDC
 			
 def mail_php_discovery():
 	print "\n"
-        print bcolors.OKBLUE + "*************************"
+        print bcolors.OKBLUE + "********************************"
         print "Checking PHP Script Compromise"
-        print "*************************" + bcolors.ENDC
+        print "********************************" + bcolors.ENDC
 	if (MTA=="Postfix") or (MTA=="Qmail"):
 		if float(PHP_VERSION[0:3]) >= 5.3:
                         for i in range(3):
 				if i==0:
-					print "Checking first collection of 5 random mail headers....."
+					print "Inspecting 5 random mail headers for PHP/CGI compromise....."
 				elif i==1:
-					print "Checking second collection of 5 random mail headers....."
+					print "Insufficient evidence on previous 5 random mail headers, therefore insecting another 5 random mail headers....."
 				else:
-					print "Checking last collection of 5 random mail headers....."
+					print "Insufficient evidence on previous 10 random mail headers, therefore insecting another 5 random mail headers....."
                                 outcome=verifySpam(MTA)
                                 #print outcome
                                 if len(outcome)>0:
                                         if outcome.has_key('infected')==True:
 						print "Infected files are: "
 						for x in range (0,len(outcome['infected'])):
-                                                        print bcolors.OKGREEN +outcome['infected'][x]+bcolors.ENDC
+                                                        print bcolors.OKFAIL +outcome['infected'][x]+bcolors.ENDC
                                                 #print bcolors.OKGREEN + "Infected file is: ", outcome['infected'], +bcolors.ENDC
                                                 break
                                         elif outcome.has_key('manual')==True:
@@ -578,66 +578,15 @@ def mail_php_discovery():
                                                         print outcome['manual'][x]
                                                 break
                                         else:
-                                                print "Mail compromise is not detected. Please do manual checks"
+                                                print bcolors.OKGREEN + "Mail compromise is not detected. Please do manual checks" +bcolors.ENDC
                                 else:
                                         if i==2:
-                                                print bcolors.FAIL +  "No PHP compromise detected!!! Manually verify!!! " +bcolors.ENDC
+                                                print bcolors.OKGREEN +  "No PHP compromise detected!!! Manually verify!!! " +bcolors.ENDC
         	else:
                 	print bcolors.FAIL + "PHP version is:", PHP_VERSION, "PHP 5.3 and above is required to identify the spam file. Please refere to the following article to identify the script manaually. " +bcolors.ENDC	
 
 
 
-#if (MTA=="Postfix") or (MTA=="Qmail"):
-#        #print "\n"
-#        #print "*************************"
-#        #print "Plesk server? ", e.is_plesk()
-#        #print "*************************"
-#        print "\n"
-#        print "*************************"
-#        print bcolors.BOLD + "Mail Service is: ", MTA, "" + bcolors.ENDC
-#        print "*************************"
-#
-#        MAILLOG_PATH=e.mail_log_path(e.linux_dist()[0],e.is_plesk())
-#        MAIL_QUEUE_LOC=e.mail_queue_loc(MTA)
-#        if MTA=="Postfix":
-#                PATTERN="sasl_method=LOGIN"
-#                POS1=8
-#                POS2=6
-#        elif MTA=="Qmail":
-#                PATTERN="logged in"
-#                POS1=7
-#                POS2=13
-#
-#        m=MailParser()
-#        email_list=m.auth_email_list(MAILLOG_PATH,PATTERN,POS1,POS2)
-#        queue_size(MAIL_QUEUE_LOC,MTA)
-#
-#
-#        for i in email_list:
-#                if len(email_list[i]) > 150:
-#                        print bcolors.WARNING + "Compromised Email is: ", i, " " +bcolors.ENDC
-#
-#        if float(PHP_VERSION[0:3]) >= 5.3:
-#                        for i in range(3):
-#                                outcome=verifySpam(MTA)
-#                                #print outcome
-#                                if len(outcome)>0:
-#                                        if outcome.has_key('infected')==True:
-#                                                print bcolors.OKGREEN + "Infected file is: ", outcome['infected'], +bcolors.ENDC
-#                                                break
-#                                        elif outcome.has_key('manual')==True:
-#                                                print "Verify files manually: "
-#                                                for x in range (0,len(outcome['manual'])):
-#                                                        print outcome['manual'][x]
-#                                                break
-#                                        else:
-#                                                print "Mail compromise is not detected. Please do manual checks"
-#                                else:
-#                                        if i==2:
-#                                                print bcolors.FAIL +  "No compromise detected!!! Manually verify!!! " +bcolors.ENDC
-#        else:
-#                print bcolors.FAIL + "PHP version is:", PHP_VERSION, "PHP 5.3 and above is required to identify the spam file. Please refere to the following article to identify the script manaually. " +bcolors.ENDC
-#
         #yIP=socket.gethostbyname(socket.gethostname())
 def black_list():
 	ip_cmd = "curl -s -4 icanhazip.com"
