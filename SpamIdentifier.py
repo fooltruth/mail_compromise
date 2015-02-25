@@ -645,7 +645,7 @@ def deliverability():
                 output_a, err_a = p1.communicate()
 		output_a=output_a.strip()
 		if myIPLocal==output_a:
-			output_a=myIPLocal
+			output_a=myIP
 		print myIPLocal
 		print output_a
  		if len(output_a)>0:
