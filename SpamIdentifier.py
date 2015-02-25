@@ -581,7 +581,8 @@ def mail_php_discovery():
                                                         print outcome['manual'][x]
                                                 break
                                         else:
-                                                print bcolors.OKGREEN + "Mail compromise is not detected. Please do manual checks" +bcolors.ENDC
+						if i==2:
+                                                	print bcolors.OKGREEN + "Mail compromise is not detected. Please do manual checks" +bcolors.ENDC
                                 else:
                                         if i==2:
                                                 print bcolors.OKGREEN +  "No PHP compromise detected!!! Manually verify!!! " +bcolors.ENDC
