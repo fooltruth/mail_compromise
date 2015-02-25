@@ -444,8 +444,8 @@ def isSpam(queue,mta):
                 return "Incoming",incoming_mail
 
 def find_php_file(path,fname):
-	fname=fname.split(".php")[0]
-	fname=fname+".php"
+	#fname=fname.split(".php")[0]
+	#fname=fname+".php"
         cmd= "locate /" +fname
         #print cmd
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -563,9 +563,9 @@ def mail_php_discovery():
 				if i==0:
 					print "Picking 5 random mail headers for PHP/CGI compromise....." 
 				elif i==1:
-					print "Insufficient evidence on previous 5 random mail headers, therefore picking another 5 random mail headers....."
+					print "\nInsufficient evidence on previous 5 random mail headers, therefore picking another 5 random mail headers....."
 				else:
-					print "Insufficient evidence on previous 10 random mail headers, therefore picking another 5 random mail headers....."
+					print "\nInsufficient evidence on previous 10 random mail headers, therefore picking another 5 random mail headers....."
                                 outcome=verifySpam(MTA)
                                 #print outcome
                                 if len(outcome)>0:
