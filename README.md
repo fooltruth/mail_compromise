@@ -11,20 +11,20 @@ Compatability:
 - python 2.4 and above
 
 
-<h3>Download/Installation</h3>
+<h5>Download/Installation</h5>
 
 Users can download the entire repository by using 'git clone' followed by the cloning URL above. Alternatively, use the following:
 
-wget https://raw.githubusercontent.com/fooltruth/mail_compromise/master/SpamIdentifier.py -O SpamIdentifier.py
-python SpamIdentifier.py
+```wget https://raw.githubusercontent.com/fooltruth/mail_compromise/master/SpamIdentifier.py -O SpamIdentifier.py
+python SpamIdentifier.py```
 
 The execute bit (chmod +x SpamIdentifier.py) can be added so that the script can be executed without calling python directly.
 
-<h3>Application Usage</h3>
+<h5>Application Usage</h5>
 
 Here are instructions for Basic Usage of this script:
 
-SpamIdentifier.py -a 
+```SpamIdentifier.py -a ```
 
 Run SpamIdentifier.py -h for a full list of available flags and operations
 
