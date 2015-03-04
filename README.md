@@ -11,7 +11,7 @@ Compatability:
 - python 2.4 and above
 
 
-<h2>Download/Installation</h2>
+<h3>Download/Installation</h3>
 
 Users can download the entire repository by using 'git clone' followed by the cloning URL above. Alternatively, use the following:
 
@@ -20,7 +20,7 @@ python SpamIdentifier.py
 
 The execute bit (chmod +x SpamIdentifier.py) can be added so that the script can be executed without calling python directly.
 
-<h2>Application Usage</h2>
+<h3>Application Usage</h3>
 
 Here are instructions for Basic Usage of this script:
 
