@@ -133,7 +133,7 @@ class EnvironmentDiscovery:
                         #print mta
                         return mta
                 elif int(outputp2) == 0:
-			rpm_cmd = "ls -l  /etc/alternatives/mta | awk -F. '{print $3}'"
+			rpm_cmd = "ls -l  /etc/alternatives/mta | awk -F/ '{print $NF}' | awk -F. '{print $2}'"
 			p3 = subprocess.Popen(rpm_cmd, stdout=subprocess.PIPE, shell=True)
 			outputp3, err = p3.communicate()
 			print "Hello", outputp3
