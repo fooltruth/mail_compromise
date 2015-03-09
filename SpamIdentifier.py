@@ -133,7 +133,14 @@ class EnvironmentDiscovery:
                         #print mta
                         return mta
                 elif int(outputp2) == 0:
-                        print "No mail service is currently running. Please start mail service and run the script again."
+			rpm_cmd = "ls -l  /etc/alternatives/mta | awk -F. '{print $3}'"
+			p3 = subprocess.Popen(rpm_cmd, stdout=subprocess.PIPE, shell=True)
+			outputp3, err = p3.communicate()
+			#print "Hello", outputp3
+			if outputp3.rstrip()=="postfix":
+				return "Postfix"
+			else:
+                        	print "No mail service is currently running. Please start mail service and run the script again."
                 else:
                         print "There are multiple MTA's running and this script is not compatiable"
 
