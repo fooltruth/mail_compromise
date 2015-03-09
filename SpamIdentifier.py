@@ -136,7 +136,7 @@ class EnvironmentDiscovery:
 			rpm_cmd = "ls -l  /etc/alternatives/mta | awk -F. '{print $3}'"
 			p3 = subprocess.Popen(rpm_cmd, stdout=subprocess.PIPE, shell=True)
 			outputp3, err = p3.communicate()
-			#print "Hello", outputp3
+			print "Hello", outputp3
 			if outputp3.rstrip()=="postfix":
 				return "Postfix"
 			else:
